@@ -1,19 +1,12 @@
 const request = require('supertest');
 const { expect } = require('chai');
 require('dotenv').config();
+const { obterToken } = require('../helpers/autenticacao')
 
 describe('Transferencias', () => {
     describe('POST/Transferencias', () => {
         it('Deve retornar sucesso 201 quado valor de transferência for igual ou acima de R$ 10,00', async () => {
-            const respostaLogin = await request(process.env.BASE_URL)
-                .post('/login')
-                .set('Content-Type', 'application/json')
-                .send({
-                    'username': 'julio.lima',
-                    'senha': '123456'
-                })
-
-            const token = respostaLogin.body.token
+            const token = await obterToken('julio.lima', '123456')
 
             const resposta = await request(process.env.BASE_URL)
                 .post('/transferencias')
@@ -31,15 +24,7 @@ describe('Transferencias', () => {
         })
 
         it('Deve retornar falha 422 quando valor de transferência for abaixo de R$ 10,00', async () => {
-            const respostaLogin = await request(process.env.BASE_URL)
-                .post('/login')
-                .set('Content-Type', 'application/json')
-                .send({
-                    'username': 'julio.lima',
-                    'senha': '123456'
-                })
-
-            const token = respostaLogin.body.token
+            const token = await obterToken('julio.lima', '123456')
 
             const resposta = await request('http://localhost:3000')
                 .post('/transferencias')
