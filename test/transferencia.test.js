@@ -5,9 +5,13 @@ const { obterToken } = require('../helpers/autenticacao')
 
 describe('Transferencias', () => {
     describe('POST/Transferencias', () => {
-        it('Deve retornar sucesso 201 quado valor de transferência for igual ou acima de R$ 10,00', async () => {
-            const token = await obterToken('julio.lima', '123456')
+        let token
 
+        beforeEach(async () => {
+            token = await obterToken('julio.lima', '123456')
+        })
+
+        it('Deve retornar sucesso 201 quado valor de transferência for igual ou acima de R$ 10,00', async () => {
             const resposta = await request(process.env.BASE_URL)
                 .post('/transferencias')
                 .set('Content-Type', 'application/json')
@@ -18,14 +22,11 @@ describe('Transferencias', () => {
                     valor: 11,
                     token: "string"
                 })
-
             expect(resposta.status).to.equal(201);
             expect(resposta.body.message).to.equal('Transferência realizada com sucesso.');
         })
 
         it('Deve retornar falha 422 quando valor de transferência for abaixo de R$ 10,00', async () => {
-            const token = await obterToken('julio.lima', '123456')
-
             const resposta = await request('http://localhost:3000')
                 .post('/transferencias')
                 .set('Content-Type', 'application/json')
@@ -36,7 +37,6 @@ describe('Transferencias', () => {
                     valor: 9,
                     token: "string"
                 })
-
             expect(resposta.status).to.equal(422);
             expect(resposta.body.error).to.equal('O valor da transferência deve ser maior ou igual a R$10,00.');
         })
